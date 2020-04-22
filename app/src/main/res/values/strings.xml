@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Dotify</string>
+
+    <string name="user_name">npham24_BS</string>
+    <string name="change_user">CHANGE USER</string>
+    <string name="apply">APPLY</string>
+    <string name="user_name_hint">New username</string>
+
+    <string name="album_title">Song of Storm</string>
+    <string name="album_artist">Tune of Hyrule featuring Zelda, Link and Ganondorf</string>
+    <string name="album_desc">Picture of the cutest princess</string>
+
+    <string name="play_btn_desc">Play</string>
+    <string name="next_btn_desc">Next</string>
+    <string name="prev_btn_desc">Prev</string>
+    <string name="play_count">%1$i %2$s</string>
 </resources>
