@@ -10,4 +10,4 @@ Extra credit attempted:
 2. All hardcoded dimensions & colors are extracted into res/values/dimens.xml & res/values/colors.xml respectively (+ .5)
 
 Screenshot:
-![Screenshot app working]("./screenshot.png")
+![Screenshot app working](./screenshot.png)
