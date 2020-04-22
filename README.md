@@ -1,5 +1,5 @@
 # INFO 448 Assignment 1, Dotify
-# By Nam Pham
+## By Nam Pham
 
 This application is a rip off mock application of a music player that cannot even play music
 
