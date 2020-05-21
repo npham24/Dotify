@@ -12,11 +12,18 @@ class MainActivity : AppCompatActivity() {
     private var playCount = 0
     private var changingUserName = false
 
+    companion object {
+        const val SONG_NAME = "song_name_key"
+        const val ARTIST_NAME = "artist_name_key"
+        const val ALBUM_COVER = "album_cover_key"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         this.playCount = Random.nextInt(0, 1000)
+        populatePlayer()
         displayPlayCount()
 
         // I tried it without passing the View and it seems that it does it
@@ -58,6 +65,12 @@ class MainActivity : AppCompatActivity() {
                 this.changingUserName = false
             }
         }
+    }
+
+    private fun populatePlayer() {
+        ivAlbumCover.setImageResource(intent.getIntExtra(ALBUM_COVER, -1))
+        tvSongTitle.text = intent.getStringExtra(SONG_NAME)
+        tvSongArtist.text = intent.getStringExtra(ARTIST_NAME)
     }
 
 
