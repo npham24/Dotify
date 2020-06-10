@@ -9,11 +9,13 @@ import com.ericchee.songdataprovider.SongDataProvider
 import com.example.dotify.MainActivity.Companion.ALBUM_COVER
 import com.example.dotify.MainActivity.Companion.ARTIST_NAME
 import com.example.dotify.MainActivity.Companion.SONG_NAME
+import com.example.dotify.model.SongListAdapter
 import kotlinx.android.synthetic.main.activity_song_list.*
 
 class SongListActivity : AppCompatActivity() {
     private val listOfSongs = SongDataProvider.getAllSongs()
-    private val songListAdapter = SongListAdapter(listOfSongs)
+    private val songListAdapter =
+        SongListAdapter(listOfSongs)
     private var selectedSong: Song? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

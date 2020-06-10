@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         else {
             if (editUserName.text.toString() != "") {
                 tvUserName.text = editUserName.text
+
                 editUserName.visibility = View.INVISIBLE
                 tvUserName.visibility = View.VISIBLE
                 btnChangeUser.text = getString(R.string.change_user)

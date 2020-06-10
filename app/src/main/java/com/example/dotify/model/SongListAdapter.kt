@@ -1,4 +1,4 @@
-package com.example.dotify
+package com.example.dotify.model
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ericchee.songdataprovider.Song
+import com.example.dotify.R
 
 class SongListAdapter(private var listOfSongs: List<Song>): RecyclerView.Adapter<SongListAdapter.SongViewHolder>() {
     var onSongClickListener: ((song: Song) -> Unit)? = null
