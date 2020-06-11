@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    android:background="#00BCD4"
     android:padding="16dp">
 
     <TextView
@@ -15,9 +15,9 @@
 
         android:text="@string/user_name"
 
+        app:layout_constraintBottom_toBottomOf="@+id/btnChangeUser"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnChangeUser"
-        app:layout_constraintBottom_toBottomOf="@+id/btnChangeUser" />
+        app:layout_constraintTop_toTopOf="@+id/btnChangeUser" />
 
     <EditText
         android:id="@+id/editUserName"
@@ -25,18 +25,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="@string/user_name"
+        android:autofillHints="@string/user_name_hint"
 
+        android:hint="@string/user_name_hint"
+
+        android:inputType="text"
+        android:text="@string/user_name"
         android:visibility="invisible"
 
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnChangeUser"
         app:layout_constraintBottom_toBottomOf="@+id/btnChangeUser"
-
-        android:autofillHints="@string/user_name_hint"
-        android:inputType="text"
-        android:hint="@string/user_name_hint"
-        />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnChangeUser" />
 
     <Button
         android:id="@+id/btnChangeUser"
@@ -55,72 +54,72 @@
         android:id="@+id/layoutSong"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/btnChangeUser"
-        android:gravity="center">
+        app:layout_constraintTop_toBottomOf="@id/btnChangeUser">
 
         <ImageView
             android:id="@+id/ivAlbumCover"
 
             android:layout_width="280dp"
             android:layout_height="280dp"
+            android:contentDescription="@string/album_desc"
             android:paddingTop="110dp"
-            android:scaleType="centerCrop"
 
+            android:scaleType="centerCrop"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:srcCompat="@drawable/zelda"
-            android:contentDescription="@string/album_desc" />
+            app:srcCompat="@drawable/zelda" />
 
         <TextView
             android:id="@+id/tvSongTitle"
 
+            style="@style/Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:paddingTop="10dp"
 
             android:text="@string/album_title"
-
-            app:layout_constraintTop_toBottomOf="@+id/ivAlbumCover"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            style="@style/Title" />
+            app:layout_constraintTop_toBottomOf="@+id/ivAlbumCover" />
 
         <TextView
             android:id="@+id/tvSongArtist"
 
+            style="@style/Artist"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
 
-            android:text="@string/album_artist"
+            android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
 
-            app:layout_constraintTop_toBottomOf="@+id/tvSongTitle"
+            android:text="@string/album_artist"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            style="@style/Artist"/>
+            app:layout_constraintTop_toBottomOf="@+id/tvSongTitle" />
 
         <TextView
             android:id="@+id/tvPlayCounter"
 
+            style="@style/Artist"
             android:layout_width="wrap_content"
+
             android:layout_height="wrap_content"
 
             android:text="0 plays"
-
-            app:layout_constraintTop_toBottomOf="@+id/tvSongArtist"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            style="@style/Artist"/>
+            app:layout_constraintTop_toBottomOf="@+id/tvSongArtist" />
     </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/layoutSong"
-        android:paddingTop="30dp">
+        android:paddingTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutSong">
 
         <ImageButton
             android:id="@+id/btnPrev"
@@ -128,12 +127,12 @@
             android:layout_width="0dp"
             android:layout_height="60dp"
 
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:background="#00FFFFFF"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-
             android:contentDescription="@string/prev_btn_desc"
+
+            android:scaleType="fitCenter"
             app:srcCompat="@drawable/backward_arrow" />
 
         <ImageButton
@@ -142,12 +141,12 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
 
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:background="#00FFFFFF"
             android:layout_gravity="center"
-
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
             android:contentDescription="@string/play_btn_desc"
+
+            android:scaleType="fitCenter"
             app:srcCompat="@drawable/play" />
 
         <ImageButton
@@ -156,18 +155,16 @@
             android:layout_width="0dp"
             android:layout_height="60dp"
 
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:background="#00FFFFFF"
             android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            android:contentDescription="@string/next_btn_desc"
+
+            android:scaleType="fitCenter"
 
             app:layout_constraintTop_toTopOf="@+id/ivAlbum"
-
-            android:contentDescription="@string/next_btn_desc"
-            app:srcCompat="@drawable/forward_arrow"
-            />
+            app:srcCompat="@drawable/forward_arrow" />
     </LinearLayout>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

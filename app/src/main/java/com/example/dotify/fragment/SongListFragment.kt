@@ -14,14 +14,16 @@ import com.example.dotify.model.SongListAdapter
 import kotlinx.android.synthetic.main.activity_song_list.*
 
 class SongListFragment: Fragment() {
-    private lateinit var onSongClickedListener: OnSongClickListener
-    private lateinit var listOfSongs: MutableList<Song>
     private lateinit var songListAdapter: SongListAdapter
+    private lateinit var listOfSongs: MutableList<Song>
+    private lateinit var onSongClickListener: OnSongClickListener
 
     companion object {
+        const val SONG_LIST_FRAGMENT_KEY: String = "song_list_key"
+        const val LIST_ORDER_KEY = "list_order_key"
         val TAG = SongListFragment::class.java.simpleName
-        const val SONG_LIST_FRAGMENT_KEY = "SONG_LIST_FRAGMENT_KEY"
-        fun newInstance(listOfSongs: List<Song>): SongListFragment {
+
+        fun getInstance(listOfSongs: List<Song>): SongListFragment {
             return SongListFragment().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(SONG_LIST_FRAGMENT_KEY, ArrayList(listOfSongs))
@@ -30,21 +32,27 @@ class SongListFragment: Fragment() {
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         if (context is OnSongClickListener) {
-            onSongClickedListener = context
+            onSongClickListener = context
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.let { arg ->
-            with (arg) {
-                getParcelableArrayList<Song>(SONG_LIST_FRAGMENT_KEY)?.let { list ->
-                    listOfSongs = list
+        if (savedInstanceState != null) {
+            savedInstanceState.getParcelableArrayList<Song>(LIST_ORDER_KEY)?.let { list ->
+                listOfSongs = list.toMutableList()
+            }
+        } else {
+            arguments?.let { args ->
+                with (args) {
+                    getParcelableArrayList<Song>(SONG_LIST_FRAGMENT_KEY)?.let { list ->
+                        listOfSongs = list.toMutableList()
+                    }
                 }
             }
         }
@@ -55,7 +63,7 @@ class SongListFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.activity_song_list, container, false)
+        return layoutInflater.inflate(R.layout.activity_song_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,15 +72,17 @@ class SongListFragment: Fragment() {
         rvSongList.adapter = songListAdapter
 
         songListAdapter.onSongClickListener = {song ->
-            Log.i("lol", "lil")
-            onSongClickedListener.onSongClicked(song)
+            onSongClickListener.onSongClicked(song)
         }
     }
 
-    fun shuffleList() {
-        listOfSongs = listOfSongs.apply {
-            shuffle()
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList(LIST_ORDER_KEY, ArrayList(listOfSongs))
+        super.onSaveInstanceState(outState)
+    }
+
+    fun shuffleMusicList() {
+        listOfSongs = listOfSongs.apply { shuffle() }
         songListAdapter.change(listOfSongs)
     }
 }

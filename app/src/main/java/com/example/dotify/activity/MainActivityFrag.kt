@@ -1,8 +1,6 @@
 package com.example.dotify.activity
 
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.ericchee.songdataprovider.Song
@@ -15,54 +13,62 @@ import kotlinx.android.synthetic.main.activity_main_container.*
 
 
 class MainActivityFrag: AppCompatActivity(), OnSongClickListener {
-    private val listOfSongs = SongDataProvider.getAllSongs()
-    private var selectedSong: Song? = null
+    private var listOfSongs = SongDataProvider.getAllSongs()
+    private var savedSong: Song? = null
 
     companion object {
-        const val CURR_SONG_KEY = "CURR_SONG_KEY"
+        const val SAVED_SONG_KEY = "SAVED_SONG_KEY"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_container)
-        Log.i("lol", "lol")
+
+        val hasSongListFragment: Boolean = supportFragmentManager.findFragmentByTag(SongListFragment.TAG) != null
+        val hasNowPlayingFragment: Boolean = supportFragmentManager.findFragmentByTag(NowPlayingFragment.TAG) != null
 
         if (savedInstanceState != null) {
-            savedInstanceState.getParcelable<Song>(CURR_SONG_KEY)?.let { song ->
-                selectedSong = song
-                showInfoOnMiniPlayer()
-            }
-        } else {
-            showSongListFrag()
+            savedSong = savedInstanceState.getParcelable(SAVED_SONG_KEY)
+            showInfoOnMiniPlayer()
         }
 
-        clMiniPlayer.setOnClickListener {
-            selectedSong?.let {song ->
-                if (!hasNowPlayingFragment()) {
-                    showNowPlayingFrag(song)
-                }
-            }
-        }
 
-        btnShuffleList.setOnClickListener {
-            val songListFragment = supportFragmentManager.findFragmentByTag(SongListFragment.TAG) as SongListFragment
-            songListFragment.shuffleList()
-        }
+        if (!hasSongListFragment && !hasNowPlayingFragment) {
+            val songListFragment = SongListFragment.getInstance(listOfSongs)
 
-        if (!hasNowPlayingFragment()) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainer, songListFragment, SongListFragment.TAG)
+                .addToBackStack(SongListFragment.TAG)
+                .commit()
+        } else if (hasSongListFragment && !hasNowPlayingFragment) {
+            val songListFragment = SongListFragment.getInstance(listOfSongs)
+
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, songListFragment, SongListFragment.TAG)
+                .commit()
+        } else if (hasNowPlayingFragment) {
             clMiniPlayer.visibility = View.GONE
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
         supportFragmentManager.addOnBackStackChangedListener {
-            val hasBackEntries = supportFragmentManager.backStackEntryCount > 0
-            supportActionBar?.setDisplayHomeAsUpEnabled(hasBackEntries)
-
-            if (hasBackEntries) {
-                clMiniPlayer.visibility = View.GONE
+            val hasBackStack = (supportFragmentManager.backStackEntryCount > 1)
+            if (hasBackStack) {
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
             } else {
-                clMiniPlayer.visibility = View.VISIBLE
+                supportActionBar?.setDisplayHomeAsUpEnabled(false)
             }
+        }
+
+        btnShuffleList.setOnClickListener {
+            val songListFragment = supportFragmentManager.findFragmentByTag(SongListFragment.TAG) as SongListFragment
+            songListFragment.shuffleMusicList()
+        }
+
+        tvSongInfo.setOnClickListener {
+            showMusicPlayerFragment()
         }
     }
 
@@ -72,44 +78,35 @@ class MainActivityFrag: AppCompatActivity(), OnSongClickListener {
         return super.onSupportNavigateUp()
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle) {
         outState?.run {
-            putParcelable(CURR_SONG_KEY, selectedSong)
+            putParcelable(SAVED_SONG_KEY, savedSong)
         }
+        super.onSaveInstanceState(outState)
     }
 
-    private fun showSongListFrag() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.flFragmentContainer, SongListFragment.newInstance(listOfSongs), SongListFragment.TAG)
-            .commit()
-    }
-
-    private fun showNowPlayingFrag(song: Song) {
+    private fun showMusicPlayerFragment() {
         clMiniPlayer.visibility = View.GONE
-        supportFragmentManager.beginTransaction()
-            .add(R.id.flFragmentContainer, NowPlayingFragment.newInstance(song), NowPlayingFragment.TAG)
-            .addToBackStack(NowPlayingFragment.TAG)
-            .commit()
+        savedSong?.let { song ->
+            val nowPlayingFragment = NowPlayingFragment.getInstance(song)
+
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainer, nowPlayingFragment, NowPlayingFragment.TAG)
+                .addToBackStack(NowPlayingFragment.TAG)
+                .commit()
+        }
     }
 
     private fun showInfoOnMiniPlayer() {
-        selectedSong?.let { song ->
-            val name = song.title
-            val artist = song.artist
+        savedSong?.let { song ->
             tvSongInfo.visibility = View.VISIBLE
-            tvSongInfo.text = "$name - $artist"
-            Log.i("lol", tvSongInfo.text.toString())
+            tvSongInfo.text = "%s - %s".format(song.title, song.artist)
         }
     }
 
-    private fun hasNowPlayingFragment(): Boolean {
-        return supportFragmentManager.findFragmentByTag(NowPlayingFragment.TAG) != null
-    }
-
     override fun onSongClicked(song: Song) {
-        selectedSong = song
+        savedSong = song
         showInfoOnMiniPlayer()
     }
 }

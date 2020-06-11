@@ -8,26 +8,25 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.ericchee.songdataprovider.Song
 import com.example.dotify.R
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_song_info.*
 import kotlin.random.Random
 
 class NowPlayingFragment: Fragment() {
-    private var playCount = 0
-    private var username = ""
-    private lateinit var selectedSong: Song
-
+    private lateinit var clickedSong: Song
+    private var playCounter: Int = 0
+    private lateinit var userName: String
 
     companion object {
-        val TAG = NowPlayingFragment::class.java.simpleName
-        const val USER_KEY = "USER_KEY"
-        const val PLAY_KEY = "PLAY_KEY"
-        const val NOW_PLAYING_FRAGMENT_KEY = "NOW_PLAYING_FRAGMENT_KEY"
-        const val DEFAULT_USERNAME = "npham24"
+        const val NOW_PLAYING_KEY: String = "NOW_PLAYING_KEY"
+        const val USERNAME_KEY = "USERNAME_KEY"
+        const val PLAY_COUNTER_KEY = "PLAY_COUNTER_KEY"
 
-        fun newInstance(song: Song): NowPlayingFragment {
+        val TAG: String = NowPlayingFragment::class.java.simpleName
+
+        fun getInstance(song: Song): NowPlayingFragment {
             return NowPlayingFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(NOW_PLAYING_FRAGMENT_KEY, song)
+                    putParcelable(NOW_PLAYING_KEY, song)
                 }
             }
         }
@@ -37,19 +36,19 @@ class NowPlayingFragment: Fragment() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState != null) {
-            playCount = savedInstanceState.getInt(PLAY_KEY)
-            savedInstanceState.getString(USER_KEY)?.let {
-                username = it
+            playCounter = savedInstanceState.getInt(PLAY_COUNTER_KEY)
+            savedInstanceState.getString(USERNAME_KEY)?.let { name ->
+                userName = name
             }
         } else {
-            playCount = Random.nextInt(1, 100000)
-            username = DEFAULT_USERNAME
+            userName = getString(R.string.user_name)
+            playCounter = Random.nextInt(1, 1000000)
         }
 
-        arguments?.let {arg ->
-            with(arg) {
-                getParcelable<Song>(NOW_PLAYING_FRAGMENT_KEY)?.let {song ->
-                    selectedSong = song
+        arguments?.let { args ->
+            with (args) {
+                getParcelable<Song>(NOW_PLAYING_KEY)?.let { song ->
+                    clickedSong = song
                 }
             }
         }
@@ -60,77 +59,80 @@ class NowPlayingFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.activity_main, container, false)
+        return layoutInflater.inflate(R.layout.activity_song_info, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        displaySongInfo()
-        displayUserName()
-        displayPlayCount()
-
-        btnPrev.setOnClickListener {
-            makeToast("Skipping to previous track")
-        }
-
-        btnNext.setOnClickListener {
-            makeToast("Skipping to next track")
-        }
-
-        btnPlay.setOnClickListener {
-            playCount++;
-            displayPlayCount()
-        }
+        populateUsername()
+        populateViewCount()
+        populatePlayer()
 
         btnChangeUser.setOnClickListener {
-            changeUser()
+                v: View -> fnChangeUser(v)
+        }
+        btnPrev.setOnClickListener {
+                v: View -> fnPrevSong(v)
+        }
+        btnPlay.setOnClickListener {
+                v: View -> fnPlaySong(v)
+        }
+        btnNext.setOnClickListener {
+                v: View -> fnNextSong(v)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         outState?.run {
-            putInt(PLAY_KEY, playCount)
-            putString(USER_KEY, username)
+            putInt(PLAY_COUNTER_KEY, playCounter)
+            putString(USERNAME_KEY, userName)
         }
+        super.onSaveInstanceState(outState)
     }
 
-    private fun makeToast(toast: String) {
-        Toast.makeText(context, toast, Toast.LENGTH_SHORT).show()
+    private fun populatePlayer() {
+        ivAlbumCover.setImageResource(clickedSong.largeImageID)
+        tvSongTitle.text = clickedSong.title
+        tvSongArtist.text = clickedSong.artist
     }
 
-    private fun displaySongInfo() {
-        ivAlbumCover.setImageResource(selectedSong.largeImageID)
-        tvSongTitle.text = selectedSong.title
-        tvSongArtist.text = selectedSong.artist
+    private fun fnPlaySong(view: View) {
+        playCounter++
+        populateViewCount()
     }
 
-    private fun displayUserName() {
-        tvUserName.text = username
+    private fun fnPrevSong(view: View) {
+        makeToast("Skipping to previous track")
     }
 
-    private fun displayPlayCount() {
-        var play = " play";
-        if (playCount > 1) {
-            play = " plays";
-        }
-
-        tvPlayCounter.text = "${playCount} ${play}"
+    private fun fnNextSong(view: View) {
+        makeToast("Skipping to next track")
     }
 
-    private fun changeUser() {
+    private fun fnChangeUser(view: View) {
         if (btnChangeUser.text == getString(R.string.change_user)) {
-            tvUserName.visibility = View.INVISIBLE
-            editUserName.visibility = View.VISIBLE
-            btnChangeUser.text = getString(R.string.apply)
+                btnChangeUser.text = getString(R.string.apply)
+                tvUserName.visibility = View.INVISIBLE
+                editUserName.visibility = View.VISIBLE
         } else {
-            username = editUserName.text.toString()
-
-            editUserName.visibility = View.INVISIBLE
-            tvUserName.visibility = View.VISIBLE
+            userName = editUserName.text.toString()
+            populateUsername()
             btnChangeUser.text = getString(R.string.change_user)
-            displayUserName()
+            tvUserName.visibility = View.VISIBLE
+            editUserName.visibility = View.INVISIBLE
         }
+    }
+
+    private fun populateViewCount() {
+        tvPlayCounter.text = "$playCounter plays"
+    }
+
+    private fun populateUsername() {
+        tvUserName.text = userName
+    }
+
+    private fun makeToast(text: String) {
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
 }
